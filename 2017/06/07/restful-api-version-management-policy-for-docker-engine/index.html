@@ -18,11 +18,11 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
     <title>
         
-        Hello World｜Revol&#39;s Blog
+        Docker Engine 的 RESTful API 版本管理策略｜Revol&#39;s Blog
         
     </title>
 
-    <link rel="canonical" href="http://blog.kyonr.com/2017/06/06/hello-world/">
+    <link rel="canonical" href="http://blog.kyonr.com/2017/06/07/restful-api-version-management-policy-for-docker-engine/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -80,7 +80,15 @@
                         
 							
                         <li>
-                            <a href="/tags/">tags</a>
+                            <a href="/archive/">ARCHIVE</a>
+                        </li>
+							
+						
+                    
+                        
+							
+                        <li>
+                            <a href="/tags/">TAGS</a>
                         </li>
 							
 						
@@ -128,13 +136,13 @@
 
 
 <img class="wechat-title-img"
-     src="http://or4eklid8.bkt.clouddn.com/post-default.jpg">
+     src="http://or4eklid8.bkt.clouddn.com/restful-api-versioning.jpeg">
 
 
 <style>
     
     header.intro-header {
-        background-image: url('http://or4eklid8.bkt.clouddn.com/post-default.jpg')
+        background-image: url('http://or4eklid8.bkt.clouddn.com/restful-api-versioning.jpeg?imageView2/1/w/1400/h/400/interlace/1/q/90')
     }
 
     
@@ -145,15 +153,21 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
                 <div class="post-heading">
-                    <h1>Hello World</h1>
+                    <h1>Docker Engine 的 RESTful API 版本管理策略</h1>
                     
                     <span class="meta">
                          作者 Cai Renjie
                         <span>
-                          日期 2017-06-06
+                          日期 2017-06-07
                          </span>
                     </span>
                     <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#RESTful"
+                           title="RESTful">RESTful</a>
+                        
+                        <a class="tag" href="/tags/#Docker"
+                           title="Docker">Docker</a>
                         
                     </div>
                 </div>
@@ -162,7 +176,7 @@
     </div>
     <div class="post-title-haojen">
         <span>
-            Hello World
+            Docker Engine 的 RESTful API 版本管理策略
         </span>
     </div>
 </header>
@@ -173,15 +187,12 @@
         <div class="row">
             <!-- Post Container -->
             <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
-                <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+                <p><a href="https://github.com/moby/moby" target="_blank" rel="external">Docker</a> 项目是一个标准的 C/S 架构，Docker Daemon（二进制为 dockerd） 作为 Server，其他诸如 Docker Client、docker-py 等则作为 Client。Daemon 提供了一套标准化的 RESTful API 供客户端使用。经过多年的发展，Docker 的版本号发生了大变革，变成了日期命名并且已经到了 17.05 版本，Docker 项目甚至改名成了 Moby。但 Docker 的 API 却一直保证了良好的兼容性，有着完善的版本管理策略和文档。</p>
+<p>本文将就 Docker Engine 的 API 版本管理策略展开讨论。</p>
+<h2 id="dai-ma-ban-ben-he-api-ban-ben-xiang-hu-du-li">代码版本和 API 版本相互独立<a href="dai-ma-ban-ben-he-api-ban-ben-xiang-hu-du-li" class="header-anchor">"#"</a></h2>
+<p>在命令行中执行 <code>docker version</code> 我们可以看到</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">$ docker version</div><div class="line"></div><div class="line">Client:</div><div class="line"> Version:      17.04.0-ce</div><div class="line"> API version:  1.28</div><div class="line"> Go version:   go1.7.5</div><div class="line"> Git commit:   4845c56</div><div class="line"> Built:        Wed Apr  5 06:06:36 2017</div><div class="line"> OS/Arch:      darwin/amd64</div><div class="line"></div><div class="line">Server:</div><div class="line"> Version:      17.04.0-ce</div><div class="line"> API version:  1.28 (minimum version 1.12)</div><div class="line"> Go version:   go1.7.5</div><div class="line"> Git commit:   4845c56</div><div class="line"> Built:        Tue Apr  4 00:37:25 2017</div><div class="line"> OS/Arch:      linux/amd64</div><div class="line"> Experimental: <span class="literal">true</span></div></pre></td></tr></table></figure>
+<p>Client 和 Server 除了本身的 Version 外还有一个 API Version，</p>
 
                 <hr>
                 
@@ -208,7 +219,7 @@
 
             <div class="hidden-xs col-sm-3 toc-col">
                 <div class="toc-wrap">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Quick-Start"><span class="toc-text">Quick Start</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Create-a-new-post"><span class="toc-text">Create a new post</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Run-server"><span class="toc-text">Run server</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Generate-static-files"><span class="toc-text">Generate static files</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Deploy-to-remote-sites"><span class="toc-text">Deploy to remote sites</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#dai-ma-ban-ben-he-api-ban-ben-xiang-hu-du-li"><span class="toc-text">代码版本和 API 版本相互独立"#"</span></a></li></ol>
                 </div>
             </div>
         </div>
@@ -230,6 +241,12 @@
                     </h5>
                     <div class="tags">
                         
+                        <a class="tag" href="/tags/#RESTful"
+                           title="RESTful">RESTful</a>
+                        
+                        <a class="tag" href="/tags/#Docker"
+                           title="Docker">Docker</a>
+                        
                     </div>
                 </section>
                 
@@ -248,8 +265,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "kyonr";
-    var disqus_identifier = "http://blog.kyonr.com/2017/06/06/hello-world/";
-    var disqus_url = "http://blog.kyonr.com/2017/06/06/hello-world/";
+    var disqus_identifier = "http://blog.kyonr.com/2017/06/07/restful-api-version-management-policy-for-docker-engine/";
+    var disqus_url = "http://blog.kyonr.com/2017/06/07/restful-api-version-management-policy-for-docker-engine/";
 
     (function () {
         var dsq = document.createElement('script');
