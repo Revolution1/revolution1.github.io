@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="本文的作者 Aaron Maxwell 同时也是 Powerful Python 的作者. 异常在代码中无处不在。 作为一个开发者，我们总得面对异常处理这一问题。就算是在写一个帮人们找墨西哥卷饼的工具。 哈哈，回到正题。就像我常说的：如何处理异常取决于你使用的编程语言。在运维有一定规模的应用程序时, 日志是最强大最有价值的工具之一。 我们来看看有哪些记录异常日志的方式。 “Big Tarp” 不管">
+<meta name="keywords" content="python,logging">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python 中的异常日志（译）">
+<meta property="og:url" content="http://blog.kyonr.com/2018/04/10/exceptional-logging-of-exceptions-in-python/index.html">
+<meta property="og:site_name" content="Revolution1">
+<meta property="og:description" content="本文的作者 Aaron Maxwell 同时也是 Powerful Python 的作者. 异常在代码中无处不在。 作为一个开发者，我们总得面对异常处理这一问题。就算是在写一个帮人们找墨西哥卷饼的工具。 哈哈，回到正题。就像我常说的：如何处理异常取决于你使用的编程语言。在运维有一定规模的应用程序时, 日志是最强大最有价值的工具之一。 我们来看看有哪些记录异常日志的方式。 “Big Tarp” 不管">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-04-11T19:55:57.805Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python 中的异常日志（译）">
+<meta name="twitter:description" content="本文的作者 Aaron Maxwell 同时也是 Powerful Python 的作者. 异常在代码中无处不在。 作为一个开发者，我们总得面对异常处理这一问题。就算是在写一个帮人们找墨西哥卷饼的工具。 哈哈，回到正题。就像我常说的：如何处理异常取决于你使用的编程语言。在运维有一定规模的应用程序时, 日志是最强大最有价值的工具之一。 我们来看看有哪些记录异常日志的方式。 “Big Tarp” 不管">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/logo.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/logo192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/logo180x180.png">
+          
+        
+    
+    <!-- title -->
+    <title>Python 中的异常日志（译）</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+</head>
+
+<body class="max-width mx-auto px3">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="http://github.com/revolution1">项目</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" href="/2017/06/07/restful-api-version-management-strategy-of-docker-engine/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://blog.kyonr.com/2018/04/10/exceptional-logging-of-exceptions-in-python/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://blog.kyonr.com/2018/04/10/exceptional-logging-of-exceptions-in-python/&text=Python 中的异常日志（译）"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://blog.kyonr.com/2018/04/10/exceptional-logging-of-exceptions-in-python/&title=Python 中的异常日志（译）"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://blog.kyonr.com/2018/04/10/exceptional-logging-of-exceptions-in-python/&is_video=false&description=Python 中的异常日志（译）"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Python 中的异常日志（译）&body=Check out this article: http://blog.kyonr.com/2018/04/10/exceptional-logging-of-exceptions-in-python/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://blog.kyonr.com/2018/04/10/exceptional-logging-of-exceptions-in-python/&title=Python 中的异常日志（译）"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://blog.kyonr.com/2018/04/10/exceptional-logging-of-exceptions-in-python/&title=Python 中的异常日志（译）"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://blog.kyonr.com/2018/04/10/exceptional-logging-of-exceptions-in-python/&title=Python 中的异常日志（译）"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://blog.kyonr.com/2018/04/10/exceptional-logging-of-exceptions-in-python/&title=Python 中的异常日志（译）"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://blog.kyonr.com/2018/04/10/exceptional-logging-of-exceptions-in-python/&name=Python 中的异常日志（译）&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#big-tarp- 不管三七二十一全 -catch- 了式"><span class="toc-number">1.</span> <span class="toc-text">“Big Tarp” 不管三七二十一全 catch 了式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#pinpoint- 细粒度式"><span class="toc-number">2.</span> <span class="toc-text">“Pinpoint” 细粒度式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#transformer- 转换异常类型式"><span class="toc-number">3.</span> <span class="toc-text">“Transformer” 转换异常类型式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#message-and-raise- 记一下再抛出来式"><span class="toc-number">4.</span> <span class="toc-text">“Message and Raise” 记一下再抛出来式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cryptic-message- 打出迷之日志的反形式"><span class="toc-number">5.</span> <span class="toc-text">“Cryptic Message” 打出迷之日志的反形式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#最危险的 -python- 反形式"><span class="toc-number">6.</span> <span class="toc-text">最危险的 Python 反形式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更多异常日志形式"><span class="toc-number">7.</span> <span class="toc-text">更多异常日志形式</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index my4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Python 中的异常日志（译）
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Revolution1</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2018-04-10T13:02:43.000Z" itemprop="datePublished">2018-04-10</time>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/logging/">logging</a>, <a class="tag-link" href="/tags/python/">python</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>本文的作者 Aaron Maxwell 同时也是 <a href="https://powerfulpython.com/" target="_blank" rel="noopener">Powerful Python</a> 的作者.</p>
+<p>异常在代码中无处不在。 作为一个开发者，我们总得面对异常处理这一问题。就算是在写一个帮人们找墨西哥卷饼的工具。</p>
+<p>哈哈，回到正题。就像我常说的：如何处理异常取决于你使用的编程语言。在运维有一定规模的应用程序时, 日志是最强大最有价值的工具之一。 我们来看看有哪些记录异常日志的方式。</p>
+<h2 id="big-tarp- 不管三七二十一全 -catch- 了式"><a class="header-anchor" href="#big-tarp- 不管三七二十一全 -catch- 了式"></a>“Big Tarp” 不管三七二十一全 catch 了式</h2>
+<p>我们从一个比较极端的例子开始讲起：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    main_loop()</span><br><span class="line"><span class="keyword">except</span> Exception:</span><br><span class="line">    logger.exception(<span class="string">"Fatal error in main loop"</span>)</span><br></pre></td></tr></table></figure>
+<p>这个 try-except 会捕获所有异常。 这种异常捕获方式适合用在那些可能会抛出一些你无法预知的异常的代码块上 (比如 main_loop())。与其让应用就这样崩溃，你可以选择捕获并用日志记录下这一异常，继续让应用运行下去。</p>
+<p>这里比较 magic 的地方是选择使用 <code>logger.exception</code> 方法 (logger 是调用 logging.getLogger() 返回的一个实例)。这个棒棒的方法会记录下代码块完整的异常栈追踪信息并完整的输出出来。</p>
+<p>可以注意到的是这里我们并不需要将异常对象传给 exception 方法，只需要传一个 logging message 字符串。message 会出现在第一行，然后输出完整的异常栈。异常发生时，代码的输出看起来会像是这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Fatal error in main loop</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;bigtarp.py&quot;, line 14, in</span><br><span class="line">    main_loop()</span><br><span class="line">  File &quot;bigtarp.py&quot;, line 9, in main_loop</span><br><span class="line">    print(foo(x))</span><br><span class="line">  File &quot;bigtarp.py&quot;, line 4, in foo</span><br><span class="line">    return 10 // n</span><br><span class="line">ZeroDivisionError: integer division or modulo by zero</span><br></pre></td></tr></table></figure>
+<p>这里的演示都是示例用简单代码的输出，细节并不重要。 只需要注意到第一行是我们传给 <code>logger.exception()</code> 方法的 <code>message</code>，后面那些行都是异常栈，最后一行是异常类型 (例子中是 <code>ZeroDivisionError</code>)。这种捕捉记录方式会捕获任何异常并这样打印出来。</p>
+<p><code>logger.exception</code> 方法默认的日志级别是 ERROR。你也可以使用其他常用的 logging 方法 <code>logger.debug()</code>、 <code>logger.info()</code>、 <code>logger.warn()</code> 等等，并传一个 <code>exc_info</code> 参数，值为 <code>True</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        main_loop()</span><br><span class="line">    <span class="keyword">except</span> Exception:</span><br><span class="line">        logger.error(<span class="string">"Fatal error in main loop"</span>, exc_info=<span class="keyword">True</span>)</span><br></pre></td></tr></table></figure>
+<p>将 <code>exc_info</code> 参数设置为 <code>True</code> 会导致 logging 记录下完整的 stack trace…。 和 logger.exception() 的行为完全一致. 唯一的不同是这样你可以更方便的指定日志级别。</p>
+<p>有趣的地方： 与 Big Tarp 形式对应的，有一个几乎完全相反的形式，接下来你就会看到。</p>
+<h2 id="pinpoint- 细粒度式"><a class="header-anchor" href="#pinpoint- 细粒度式"></a>“Pinpoint” 细粒度式</h2>
+<p>现在我们来看另一个比较极端的例子。 假设你在写一个叫做 OpenBurrito 的 SDK -- 一个来解决“如何在深夜的时候在你的附近找到一家墨西哥卷饼摊”这个棘手问题的库。假设它有一个函数叫做 <code>find_burrito_joints()</code>，它可以返回一个包含有合适餐馆信息的列表。在极少的情况下，这个函数会抛出一个异常：<code>BurritoCriteriaConflict</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> openburrito <span class="keyword">import</span> find_burrito_joints, BurritoCriteriaConflict</span><br><span class="line"><span class="comment"># "criteria" is an object defining the kind of burritos you want.</span></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    places = find_burrito_joints(criteria)</span><br><span class="line"><span class="keyword">except</span> BurritoCriteriaConflict <span class="keyword">as</span> err:</span><br><span class="line">    logger.warn(<span class="string">"Cannot resolve conflicting burrito criteria: &#123;&#125;"</span>.format(err.message))</span><br><span class="line">    places = list()</span><br></pre></td></tr></table></figure>
+<p>这里的方法是通过加上一个 try-except 块来乐观的去执行函数 find_burrito_joints()。 执行的过程中抛出了一个 <code>BurritoCriteriaConflict</code> 异常，你用日志记录下了这个异常，解决了问题，继续执行下去。</p>
+<p>关键的不同点是这里的 except 语句. 在 Big Tarp 形式中，你基本上是捕获了任意类型的异常；在 Pinpoint 形式下，你捕获了一个非常明确类型的异常，这个异常很语义化的反映了代码中的一个部分。</p>
+<p>同样也注意到，这里我是用了 <code>logger.warn()</code> 而不是 <code>logger.exception()</code>（这篇文章中的 <code>warn()</code> 都可以被替换为 <code>info()</code>，或 <code>error()</code> 等等）。换句话说，我在一个确认的日志级别下记录了异常发生的信息，而不是记录下一整个异常栈。</p>
+<p>为什么我不去记录下整个异常栈呢？因为在这种情况下，异常栈并没有什么用处。我捕获的是一个非常明确的异常类型，它在代码逻辑中有非常明确的含义。比如，下面这一小段代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">characters = &#123;<span class="string">"hero"</span>: <span class="string">"Homer"</span>, <span class="string">"villain"</span>: <span class="string">"Mr. Burns"</span>&#125;</span><br><span class="line"><span class="comment"># Insert some code here that may or may not add a key called</span></span><br><span class="line"><span class="comment"># "sidekick" to the characters dictionary.</span></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    sidekick = characters[<span class="string">"sidekick"</span>]</span><br><span class="line"><span class="keyword">except</span> KeyError:</span><br><span class="line">    sidekick = <span class="string">"Milhouse"</span></span><br></pre></td></tr></table></figure>
+<p>这里，<code>KeyError</code> 不仅仅是一个错误，当它被抛出的时候意味着一个非常明确的条件被触发了：“sidekick” 在我定义的 characters 中是不存在的，所以我选择取一个默认值。 让日志中充满异常栈在这种情况下并没有任何帮助，这时候你就需要使用 Pinpoint 形式了。</p>
+<h2 id="transformer- 转换异常类型式"><a class="header-anchor" href="#transformer- 转换异常类型式"></a>“Transformer” 转换异常类型式</h2>
+<p>捕获一个异常，给它打日志，然后重新跑出另一个类型的异常。</p>
+<p>首先，在 Python 3 中它是这样工作的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    something()</span><br><span class="line"><span class="keyword">except</span> SomeError <span class="keyword">as</span> err:</span><br><span class="line">    logger.warn(<span class="string">"..."</span>)</span><br><span class="line">    <span class="keyword">raise</span> DifferentError() <span class="keyword">from</span> err</span><br></pre></td></tr></table></figure>
+<p>在 Python 2 中你得去掉 <code>from err</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    something()</span><br><span class="line"><span class="keyword">except</span> SomeError <span class="keyword">as</span> err:</span><br><span class="line">    logger.warn(<span class="string">"..."</span>)</span><br><span class="line">    <span class="keyword">raise</span> DifferentError()</span><br></pre></td></tr></table></figure>
+<p>(这里蕴含了很多信息，多思考一会儿...) 在原先代码抛出的异常不是很符合你程序的逻辑的时候，你会需要这种异常处理方法。这经常发生在库与库的边界上。</p>
+<p>比如，假设你在使用 openBurrito SDK 制作一个帮人们寻找深夜卷饼摊的“杀手级”应用，如果我们过于挑剔 <code>find_burrito_joints()</code> 函数可能会抛出一个 <code>BurritoCriteriaConflict</code> 异常。这是 SDK 暴露出的 API，但是它不能方便的对应到你代码中高层的逻辑。更合适的是在这里能抛出一个你自己定义的异常类型，叫做 <code>NoMatchingRestaurants</code>。</p>
+<p>这种情况下，你需要采用下面这种形式 (针对 Python 3):</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> myexceptions <span class="keyword">import</span> NoMatchingRestaurants</span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    places = find_burrito_joints(criteria)</span><br><span class="line"><span class="keyword">except</span> BurritoCriteriaConflict <span class="keyword">as</span> err:</span><br><span class="line">    logger.warn(<span class="string">"Cannot resolve conflicting burrito criteria: &#123;&#125;"</span>.format(err.message))</span><br><span class="line">    <span class="keyword">raise</span> NoMatchingRestaurants(criteria) <span class="keyword">from</span> err</span><br></pre></td></tr></table></figure>
+<p>这会输出一个单行日志，并抛出一个新的异常。如果这个新异常没有被捕获，那么错误输出看起来会是这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;transformerB3.py&quot;, line 8, in</span><br><span class="line">    places = find_burrito_joints(criteria)</span><br><span class="line">  File &quot;/Users/amax/python-exception-logging-patterns/openburrito.py&quot;, line 7, in find_burrito_joints</span><br><span class="line">    raise BurritoCriteriaConflict</span><br><span class="line">openburrito.BurritoCriteriaConflict</span><br><span class="line"></span><br><span class="line">The above exception was the direct cause of the following exception:</span><br><span class="line"></span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;transformerB3.py&quot;, line 11, in</span><br><span class="line">    raise NoMatchingRestaurants(criteria) from err</span><br><span class="line">myexceptions.NoMatchingRestaurants: &#123;&apos;region&apos;: &apos;Chiapas&apos;&#125;</span><br></pre></td></tr></table></figure>
+<p>这里就有趣了。输出中包含了 <code>NoMatchingRestaurants</code> 的异常栈，同时也输出了造成这一异常的 <code>BurritoCriteriaConflict</code> 的异常栈…… 非常清楚的表明了谁是最初的异常。</p>
+<p>在 Python 3 中，<code>raise … from … 语法使异常可以被链起来。当你写 </code>raise NoMatchingRestaurants(criteria) from err<code>，会抛出一个</code>NoMatchingRestaurants<code> 类型的异常，这个异常对象有一个叫做</code><strong>cause</strong>` 的属性，值指向它的父 exception。 Python 3 内部在报告异常的时候会默认采取这种方式。</p>
+<p>能不能在 Python 2 中实现这一特性呢 ？好吧，你不能。这就是那些你需要升级才能享受到的好东西。Python 2 不支持 <code>raise … from</code> 这样的语法, 你的异常输出只会包括 <code>NoMatchingRestaurants</code> 的异常栈。当然，“Transformer” 仍然能够完美的使用。</p>
+<h2 id="message-and-raise- 记一下再抛出来式"><a class="header-anchor" href="#message-and-raise- 记一下再抛出来式"></a>“Message and Raise” 记一下再抛出来式</h2>
+<p>这种形式下，你在某个点给发生的异常打一个日志，不作处理直接抛出，将异常交给更外层的代码来处理：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    something()</span><br><span class="line"><span class="keyword">except</span> SomeError:</span><br><span class="line">    logger.warn(<span class="string">"..."</span>)</span><br><span class="line">    <span class="keyword">raise</span></span><br></pre></td></tr></table></figure>
+<p>你并没有真正意义上的“处理”这个错误，你只是暂时中断了异常抛出并打了一个日志。 当你在外层代码的确有处理这个错误的时候，你想把代码交给外层处理，但又想在代码特定的位置用日志记录这次异常的发生，或者这个异常的含义，可以用这种形式。</p>
+<p>这在你查找异常原因，尝试去理解异常发生的上下文的时候非常有用。你可以插入这种 logging 语句来提供有用的信息，或者你想在真实的场景下安全的监控代码的执行结果。</p>
+<h2 id="cryptic-message- 打出迷之日志的反形式"><a class="header-anchor" href="#cryptic-message- 打出迷之日志的反形式"></a>“Cryptic Message” 打出迷之日志的反形式</h2>
+<p>现在我们把注意力放到一些“反形式”上… 请不要在你的代码里用这种形式。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    something()</span><br><span class="line"><span class="keyword">except</span> Exception:</span><br><span class="line">    logger.error(<span class="string">"..."</span>)</span><br></pre></td></tr></table></figure>
+<p>假设你团队的其他成员写了这种代码，半年后，你看到一个搞笑的日志消息，像这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ERROR: something bad happened</span><br></pre></td></tr></table></figure>
+<p>我希望和祈祷你在你真实的代码中不会遇到 “something bad happened”。然而，你可能会碰到一样很莫名其妙的日志消息，你会怎么办呢？</p>
+<p>好吧，首先你需要找到到底是哪一行代码抛出了这个模糊的信息。如果你运气好，grep 以下代码就找到了确切的那一行；你可能在好几个完全不同的地方找到可能抛出这个异常的代码。这会带给你好几个问题：</p>
+<p>到底是哪一行触发了异常？</p>
+<p>或者是其中几行触发的？</p>
+<p>或者是所有这些？</p>
+<p>这个日志代表了代码中的哪里？</p>
+<p>然而有些时候你根本无法通过 grep 找到异常发生的地方，因为 log 信息是生成出来的。比如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">what = <span class="string">"something"</span></span><br><span class="line">quality = <span class="string">"bad"</span></span><br><span class="line">event = <span class="string">"happened"</span></span><br><span class="line">logger.error(<span class="string">"%s %s %s"</span>, what, quality, event)</span><br></pre></td></tr></table></figure>
+<p>你怎么通过日志来搜索？如果不是你搜遍了代码也没找到匹配日志信息的那一行，你可能根本不会想到这个问题。就算你找到了，也很可能是个错的位置。</p>
+<p>最好的办法是传一个 <code>exc_info</code> 参数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    something()</span><br><span class="line"><span class="keyword">except</span> Exception:</span><br><span class="line">    logger.error(<span class="string">"something bad happened"</span>, exc_info=<span class="keyword">True</span>)</span><br></pre></td></tr></table></figure>
+<p>这样做可以让日志中包含异常栈追踪，告诉你到底是代码中的那部分抛出了异常，谁调用的它 等等… 你排错需要的所有信息都在这。</p>
+<h2 id="最危险的 -python- 反形式"><a class="header-anchor" href="# 最危险的 -python- 反形式"></a>最危险的 Python 反形式</h2>
+<p>如果让我看见你写这样的东西，我会冲到你家没收你的电脑，然后黑进你的 Github 账号删掉你所有的代码。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    something()</span><br><span class="line"><span class="keyword">except</span> Exception:</span><br><span class="line">    <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+<p>在我的文章，我成这个为 “最危险的 Python 反形式（The Most Diabolical Python Antipattern）”。 这段代码在发生异常的时候不会给你任何信息，而且源头上隐藏了可能发生的任何错误。你可能都不会知道你敲错了一个变量名，其实这最终会造成一个 NameError —— 当你凌晨两点收到告警告知你的生产环境崩掉了，然后花掉你一个通宵来找寻问题原因，因为定位问题需要的信息都被隐藏掉了。</p>
+<p>就记住不要干这种事，如果你觉得你需要简单的捕获所有异常并忽略掉，最少用个 “big tarp” （比如使用 <code>logger.exception()</code> 而不是 <code>pass</code>）</p>
+<h2 id="更多异常日志形式"><a class="header-anchor" href="# 更多异常日志形式"></a>更多异常日志形式</h2>
+<p>Python 中还有更多处理异常的形式，各有各的代价，各有各的优缺点。你知道还有什么有用的形式么？欢迎在文章下面留下评论分享。</p>
+<p>原文链接：<a href="https://www.loggly.com/blog/exceptional-logging-of-exceptions-in-python" target="_blank" rel="noopener">https://www.loggly.com/blog/exceptional-logging-of-exceptions-in-python</a></p>
+
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="http://github.com/revolution1">项目</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#big-tarp- 不管三七二十一全 -catch- 了式"><span class="toc-number">1.</span> <span class="toc-text">“Big Tarp” 不管三七二十一全 catch 了式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#pinpoint- 细粒度式"><span class="toc-number">2.</span> <span class="toc-text">“Pinpoint” 细粒度式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#transformer- 转换异常类型式"><span class="toc-number">3.</span> <span class="toc-text">“Transformer” 转换异常类型式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#message-and-raise- 记一下再抛出来式"><span class="toc-number">4.</span> <span class="toc-text">“Message and Raise” 记一下再抛出来式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cryptic-message- 打出迷之日志的反形式"><span class="toc-number">5.</span> <span class="toc-text">“Cryptic Message” 打出迷之日志的反形式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#最危险的 -python- 反形式"><span class="toc-number">6.</span> <span class="toc-text">最危险的 Python 反形式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更多异常日志形式"><span class="toc-number">7.</span> <span class="toc-text">更多异常日志形式</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://blog.kyonr.com/2018/04/10/exceptional-logging-of-exceptions-in-python/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://blog.kyonr.com/2018/04/10/exceptional-logging-of-exceptions-in-python/&text=Python 中的异常日志（译）"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://blog.kyonr.com/2018/04/10/exceptional-logging-of-exceptions-in-python/&title=Python 中的异常日志（译）"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://blog.kyonr.com/2018/04/10/exceptional-logging-of-exceptions-in-python/&is_video=false&description=Python 中的异常日志（译）"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Python 中的异常日志（译）&body=Check out this article: http://blog.kyonr.com/2018/04/10/exceptional-logging-of-exceptions-in-python/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://blog.kyonr.com/2018/04/10/exceptional-logging-of-exceptions-in-python/&title=Python 中的异常日志（译）"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://blog.kyonr.com/2018/04/10/exceptional-logging-of-exceptions-in-python/&title=Python 中的异常日志（译）"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://blog.kyonr.com/2018/04/10/exceptional-logging-of-exceptions-in-python/&title=Python 中的异常日志（译）"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://blog.kyonr.com/2018/04/10/exceptional-logging-of-exceptions-in-python/&title=Python 中的异常日志（译）"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://blog.kyonr.com/2018/04/10/exceptional-logging-of-exceptions-in-python/&name=Python 中的异常日志（译）&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+    
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2018 Cai Renjie
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="http://github.com/revolution1">项目</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+    <script type="text/javascript">
+        (function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-100695560-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'kyonr';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+
