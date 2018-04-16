@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="lua生来就非常快速、轻量，并且与C结合紧密。这使其非常适合用在性能和存储空间紧缺的嵌入式设备里。这也是其标准库这么小的原因。 lua的标准库可谓是非常“简陋”，由其是对比python这种以库丰富见称的语言来说。这对我们使用lua来开发造成了很大的不便：我们得像使用C一样到处去寻找我们需要的库，如果没有还得自己写。 我在实现一个加密算法的时候就遇到了这样的问题。算法中需要计算给定字符串的MD5值，">
+<meta name="keywords" content="revol,lua,MD5">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用 lua 计算 MD5">
+<meta property="og:url" content="http://blog.kyonr.com/lua-calc-md5/index.html">
+<meta property="og:site_name" content="Revol&#39;s Blog">
+<meta property="og:description" content="lua生来就非常快速、轻量，并且与C结合紧密。这使其非常适合用在性能和存储空间紧缺的嵌入式设备里。这也是其标准库这么小的原因。 lua的标准库可谓是非常“简陋”，由其是对比python这种以库丰富见称的语言来说。这对我们使用lua来开发造成了很大的不便：我们得像使用C一样到处去寻找我们需要的库，如果没有还得自己写。 我在实现一个加密算法的时候就遇到了这样的问题。算法中需要计算给定字符串的MD5值，">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-04-12T05:54:14.189Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="用 lua 计算 MD5">
+<meta name="twitter:description" content="lua生来就非常快速、轻量，并且与C结合紧密。这使其非常适合用在性能和存储空间紧缺的嵌入式设备里。这也是其标准库这么小的原因。 lua的标准库可谓是非常“简陋”，由其是对比python这种以库丰富见称的语言来说。这对我们使用lua来开发造成了很大的不便：我们得像使用C一样到处去寻找我们需要的库，如果没有还得自己写。 我在实现一个加密算法的时候就遇到了这样的问题。算法中需要计算给定字符串的MD5值，">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/logo.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/logo192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/logo180x180.png">
+          
+        
+    
+    <!-- title -->
+    <title>用 lua 计算 MD5</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+</head>
+
+<body class="max-width mx-auto px3">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/gallery">摄影</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="http://github.com/revolution1">项目</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/boss-oriented-programming/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://blog.kyonr.com/lua-calc-md5/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://blog.kyonr.com/lua-calc-md5/&text=用 lua 计算 MD5"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://blog.kyonr.com/lua-calc-md5/&title=用 lua 计算 MD5"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://blog.kyonr.com/lua-calc-md5/&is_video=false&description=用 lua 计算 MD5"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=用 lua 计算 MD5&body=Check out this article: http://blog.kyonr.com/lua-calc-md5/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://blog.kyonr.com/lua-calc-md5/&title=用 lua 计算 MD5"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://blog.kyonr.com/lua-calc-md5/&title=用 lua 计算 MD5"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://blog.kyonr.com/lua-calc-md5/&title=用 lua 计算 MD5"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://blog.kyonr.com/lua-calc-md5/&title=用 lua 计算 MD5"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://blog.kyonr.com/lua-calc-md5/&name=用 lua 计算 MD5&description=&lt;p&gt;lua生来就非常快速、轻量，并且与C结合紧密。这使其非常适合用在性能和存储空间紧缺的嵌入式设备里。这也是其标准库这么小的原因。&lt;/p&gt;
+&lt;p&gt;lua的标准库可谓是非常“简陋”，由其是对比python这种以库丰富见称的语言来说。这对我们使用lua来开发造成了很大的不便：我们得像使用C一样到处去寻找我们需要的库，如果没有还得自己写。&lt;/p&gt;
+&lt;p&gt;我在实现一个加密算法的时候就遇到了这样的问题。算法中需要计算给定字符串的MD5值，然而lua标准库中并没有提供hash库。经过一番查资料我找到了这么几种方案。&lt;/p&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1- 使用纯 lua 实现的 md5 算法"><span class="toc-number">1.</span> <span class="toc-text">1. 使用纯 lua 实现的 MD5 算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2- 用 c 扩展库"><span class="toc-number">2.</span> <span class="toc-text">2. 用 C 扩展库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3- 使用 io-popen"><span class="toc-number">3.</span> <span class="toc-text">3. 使用 io:popen()</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index my4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        用 lua 计算 MD5
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">revol</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2015-09-15T12:44:52.000Z" itemprop="datePublished">2015-09-15</time>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/MD5/">MD5</a>, <a class="tag-link" href="/tags/lua/">lua</a>, <a class="tag-link" href="/tags/revol/">revol</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>lua 生来就非常快速、轻量，并且与 C 结合紧密。这使其非常适合用在性能和存储空间紧缺的嵌入式设备里。这也是其标准库这么小的原因。</p>
+<p>lua 的标准库可谓是非常“简陋”，由其是对比 python 这种以库丰富见称的语言来说。这对我们使用 lua 来开发造成了很大的不便：我们得像使用 C 一样到处去寻找我们需要的库，如果没有还得自己写。</p>
+<p>我在实现一个加密算法的时候就遇到了这样的问题。算法中需要计算给定字符串的 MD5 值，然而 lua 标准库中并没有提供 hash 库。经过一番查资料我找到了这么几种方案。</p>
+<a id="more"></a>
+<h2 id="1- 使用纯 lua 实现的 md5 算法"><a class="header-anchor" href="#1- 使用纯 lua 实现的 md5 算法"></a>1. 使用纯 lua 实现的 MD5 算法</h2>
+<p>纯 lua 最大的优势就是跨平台了，在我的笔记本上能跑起来，在嵌入式机器上就能。最开始在 stackoverflow 上找到了一段代码，可是运行速度奇慢。当时便放弃了这个方案。写这篇文章的时候找到一个库 <a href="https://github.com/kikito/md5.lua" target="_blank" rel="noopener">MD5.lua</a> 貌似没有什么性能问题。</p>
+<p>不过在我主要加密算法只有十几行的情况下加上几百行的 MD5 库还是有点不爽的。</p>
+<h2 id="2- 用 c 扩展库"><a class="header-anchor" href="#2- 用 c 扩展库"></a>2. 用 C 扩展库</h2>
+<p>lua 的 C 扩展就有很多了，如 <a href="https://luarocks.org/modules/tomasguisasola/md5" target="_blank" rel="noopener">MD5</a> 和 SSL 库<a href="https://luarocks.org/modules/luarocks/luacrypto" target="_blank" rel="noopener">luacrypto</a></p>
+<p>这些库都可以很方便的使用 lua 的包管理工具 <a href="https://luarocks.org" target="_blank" rel="noopener">luarocks</a> 来安装。</p>
+<p>然而 C 库在跨平台时需要编译，交叉编译是很麻烦的事。</p>
+<h2 id="3- 使用 io-popen"><a class="header-anchor" href="#3- 使用 io-popen"></a>3. 使用 io:popen()</h2>
+<p>考虑过以上两个方案之后，我灵机一动想到了这个方法。</p>
+<p>md5sum 隶属于 GNU coreutils。作为非常常用的工具，几乎所有的 linux 发行版包括 busybox 都会自带。所以利用系统自带的工具就顺理成章了。</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">md5sum</span><span class="params">(str)</span></span></span><br><span class="line">  str=str:<span class="built_in">gsub</span>(<span class="string">"[\"\'\`]"</span>,<span class="string">"\\%1"</span>):<span class="built_in">sub</span>(<span class="number">1</span>)</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">io</span>.<span class="built_in">popen</span>(<span class="string">'echo -n"'</span>..str..<span class="string">'"|md5sum'</span>):<span class="built_in">read</span>(<span class="string">"*all"</span>):<span class="built_in">sub</span>(<span class="number">1</span>,<span class="number">-5</span>)</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>上面这个函数不仅十分精炼而且实测速度非常快。</p>
+<p>要知道 linux 系统一般还自带 base64、sha1sum、sha256sum、sha512sum 等一系列工具。所以将上面的函数稍加改动就可以实现很多其他的功能。</p>
+
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/gallery">摄影</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="http://github.com/revolution1">项目</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1- 使用纯 lua 实现的 md5 算法"><span class="toc-number">1.</span> <span class="toc-text">1. 使用纯 lua 实现的 MD5 算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2- 用 c 扩展库"><span class="toc-number">2.</span> <span class="toc-text">2. 用 C 扩展库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3- 使用 io-popen"><span class="toc-number">3.</span> <span class="toc-text">3. 使用 io:popen()</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://blog.kyonr.com/lua-calc-md5/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://blog.kyonr.com/lua-calc-md5/&text=用 lua 计算 MD5"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://blog.kyonr.com/lua-calc-md5/&title=用 lua 计算 MD5"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://blog.kyonr.com/lua-calc-md5/&is_video=false&description=用 lua 计算 MD5"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=用 lua 计算 MD5&body=Check out this article: http://blog.kyonr.com/lua-calc-md5/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://blog.kyonr.com/lua-calc-md5/&title=用 lua 计算 MD5"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://blog.kyonr.com/lua-calc-md5/&title=用 lua 计算 MD5"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://blog.kyonr.com/lua-calc-md5/&title=用 lua 计算 MD5"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://blog.kyonr.com/lua-calc-md5/&title=用 lua 计算 MD5"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://blog.kyonr.com/lua-calc-md5/&name=用 lua 计算 MD5&description=&lt;p&gt;lua生来就非常快速、轻量，并且与C结合紧密。这使其非常适合用在性能和存储空间紧缺的嵌入式设备里。这也是其标准库这么小的原因。&lt;/p&gt;
+&lt;p&gt;lua的标准库可谓是非常“简陋”，由其是对比python这种以库丰富见称的语言来说。这对我们使用lua来开发造成了很大的不便：我们得像使用C一样到处去寻找我们需要的库，如果没有还得自己写。&lt;/p&gt;
+&lt;p&gt;我在实现一个加密算法的时候就遇到了这样的问题。算法中需要计算给定字符串的MD5值，然而lua标准库中并没有提供hash库。经过一番查资料我找到了这么几种方案。&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+    
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2018 Cai Renjie
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/gallery">摄影</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="http://github.com/revolution1">项目</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+    <script type="text/javascript">
+        (function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-100695560-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'kyonr';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+

@@ -10,7 +10,7 @@
 <meta name="keywords" content="RESTful,Docker">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Docker Engine 的 RESTful API 版本管理策略">
-<meta property="og:url" content="http://blog.kyonr.com/2017/06/07/restful-api-version-management-strategy-of-docker-engine/index.html">
+<meta property="og:url" content="http://blog.kyonr.com/restful-api-version-management-strategy-of-docker-engine/index.html">
 <meta property="og:site_name" content="Revol&#39;s Blog">
 <meta property="og:description" content="Docker 项目是一个标准的 C/S 架构，Docker Daemon（二进制为 dockerd） 作为 Server，其他诸如 Docker Client、docker-py 等则作为 Client。Daemon 提供了一套 RESTful API 供客户端使用。经过多年的发展，Docker 的版本号发生了大变革，变成了日期命名并且已经到了 17.05 版本，Docker 项目甚至改名成了 M">
 <meta property="og:locale" content="zh-CN">
@@ -57,6 +57,8 @@
          
           <li><a href="/">首页</a></li>
          
+          <li><a href="/gallery">摄影</a></li>
+         
           <li><a href="/about/">关于</a></li>
          
           <li><a href="/archives/">归档</a></li>
@@ -71,8 +73,10 @@
     <span id="actions">
       <ul>
         
-        <li><a class="icon" href="/2018/04/10/exceptional-logging-of-exceptions-in-python/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        <li><a class="icon" href="/exceptional-logging-of-exceptions-in-python/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
         
+        
+        <li><a class="icon" href="/boss-oriented-programming/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
         
         <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
         <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
@@ -85,16 +89,16 @@
     <br/>
     <div id="share" style="display: none">
       <ul>
-  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://blog.kyonr.com/2017/06/07/restful-api-version-management-strategy-of-docker-engine/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://twitter.com/share?url=http://blog.kyonr.com/2017/06/07/restful-api-version-management-strategy-of-docker-engine/&text=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://blog.kyonr.com/2017/06/07/restful-api-version-management-strategy-of-docker-engine/&title=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://blog.kyonr.com/2017/06/07/restful-api-version-management-strategy-of-docker-engine/&is_video=false&description=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=Docker Engine 的 RESTful API 版本管理策略&body=Check out this article: http://blog.kyonr.com/2017/06/07/restful-api-version-management-strategy-of-docker-engine/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://getpocket.com/save?url=http://blog.kyonr.com/2017/06/07/restful-api-version-management-strategy-of-docker-engine/&title=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://reddit.com/submit?url=http://blog.kyonr.com/2017/06/07/restful-api-version-management-strategy-of-docker-engine/&title=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://blog.kyonr.com/2017/06/07/restful-api-version-management-strategy-of-docker-engine/&title=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://digg.com/submit?url=http://blog.kyonr.com/2017/06/07/restful-api-version-management-strategy-of-docker-engine/&title=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://blog.kyonr.com/2017/06/07/restful-api-version-management-strategy-of-docker-engine/&name=Docker Engine 的 RESTful API 版本管理策略&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://blog.kyonr.com/restful-api-version-management-strategy-of-docker-engine/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://blog.kyonr.com/restful-api-version-management-strategy-of-docker-engine/&text=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://blog.kyonr.com/restful-api-version-management-strategy-of-docker-engine/&title=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://blog.kyonr.com/restful-api-version-management-strategy-of-docker-engine/&is_video=false&description=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Docker Engine 的 RESTful API 版本管理策略&body=Check out this article: http://blog.kyonr.com/restful-api-version-management-strategy-of-docker-engine/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://blog.kyonr.com/restful-api-version-management-strategy-of-docker-engine/&title=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://blog.kyonr.com/restful-api-version-management-strategy-of-docker-engine/&title=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://blog.kyonr.com/restful-api-version-management-strategy-of-docker-engine/&title=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://blog.kyonr.com/restful-api-version-management-strategy-of-docker-engine/&title=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://blog.kyonr.com/restful-api-version-management-strategy-of-docker-engine/&name=Docker Engine 的 RESTful API 版本管理策略&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -195,6 +199,8 @@
          
           <li><a href="/">首页</a></li>
          
+          <li><a href="/gallery">摄影</a></li>
+         
           <li><a href="/about/">关于</a></li>
          
           <li><a href="/archives/">归档</a></li>
@@ -212,16 +218,16 @@
 
     <div id="share-footer" style="display: none">
       <ul>
-  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://blog.kyonr.com/2017/06/07/restful-api-version-management-strategy-of-docker-engine/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://twitter.com/share?url=http://blog.kyonr.com/2017/06/07/restful-api-version-management-strategy-of-docker-engine/&text=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://blog.kyonr.com/2017/06/07/restful-api-version-management-strategy-of-docker-engine/&title=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://blog.kyonr.com/2017/06/07/restful-api-version-management-strategy-of-docker-engine/&is_video=false&description=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=Docker Engine 的 RESTful API 版本管理策略&body=Check out this article: http://blog.kyonr.com/2017/06/07/restful-api-version-management-strategy-of-docker-engine/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://getpocket.com/save?url=http://blog.kyonr.com/2017/06/07/restful-api-version-management-strategy-of-docker-engine/&title=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://reddit.com/submit?url=http://blog.kyonr.com/2017/06/07/restful-api-version-management-strategy-of-docker-engine/&title=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://blog.kyonr.com/2017/06/07/restful-api-version-management-strategy-of-docker-engine/&title=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://digg.com/submit?url=http://blog.kyonr.com/2017/06/07/restful-api-version-management-strategy-of-docker-engine/&title=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://blog.kyonr.com/2017/06/07/restful-api-version-management-strategy-of-docker-engine/&name=Docker Engine 的 RESTful API 版本管理策略&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://blog.kyonr.com/restful-api-version-management-strategy-of-docker-engine/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://blog.kyonr.com/restful-api-version-management-strategy-of-docker-engine/&text=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://blog.kyonr.com/restful-api-version-management-strategy-of-docker-engine/&title=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://blog.kyonr.com/restful-api-version-management-strategy-of-docker-engine/&is_video=false&description=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Docker Engine 的 RESTful API 版本管理策略&body=Check out this article: http://blog.kyonr.com/restful-api-version-management-strategy-of-docker-engine/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://blog.kyonr.com/restful-api-version-management-strategy-of-docker-engine/&title=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://blog.kyonr.com/restful-api-version-management-strategy-of-docker-engine/&title=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://blog.kyonr.com/restful-api-version-management-strategy-of-docker-engine/&title=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://blog.kyonr.com/restful-api-version-management-strategy-of-docker-engine/&title=Docker Engine 的 RESTful API 版本管理策略"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://blog.kyonr.com/restful-api-version-management-strategy-of-docker-engine/&name=Docker Engine 的 RESTful API 版本管理策略&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -246,6 +252,8 @@
       <ul>
          
           <li><a href="/">首页</a></li>
+         
+          <li><a href="/gallery">摄影</a></li>
          
           <li><a href="/about/">关于</a></li>
          
